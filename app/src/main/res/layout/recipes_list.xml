@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/recyclerview_recipes"
-    android:name="com.rtchagas.udacity.bakingtime.RecipesListFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    app:layoutManager="LinearLayoutManager"
-    tools:context="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity"
-    tools:listitem="@layout/recipes_list_content" />
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview_recipes"
+        android:name="com.rtchagas.udacity.bakingtime.RecipesListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        tools:context="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity"
+        tools:listitem="@layout/item_recipes_list" />
+
+</android.support.design.widget.CoordinatorLayout>

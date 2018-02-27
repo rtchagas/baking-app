@@ -56,7 +56,7 @@ public class RecipesDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.recipes_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_recipes_detail, container, false);
 
         // Show the dummy content as text in a TextView.
         if (mRecipe != null) {
