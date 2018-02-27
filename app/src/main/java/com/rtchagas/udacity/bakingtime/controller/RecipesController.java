@@ -23,7 +23,7 @@ public final class RecipesController {
         // Singleton
     }
 
-    public RecipesController getInstance() {
+    public static RecipesController getInstance() {
 
         if (sInstance == null) {
             sInstance = new RecipesController();

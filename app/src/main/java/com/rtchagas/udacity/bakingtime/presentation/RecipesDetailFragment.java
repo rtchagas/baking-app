@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.rtchagas.udacity.bakingtime.R;
-import com.rtchagas.udacity.bakingtime.core.DummyContent;
+import com.rtchagas.udacity.bakingtime.core.Recipe;
 
 /**
  * A fragment representing a single Recipes detail screen.
@@ -23,12 +23,12 @@ public class RecipesDetailFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_RECIPE = "item_id";
 
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
+    private Recipe mRecipe;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -41,16 +41,14 @@ public class RecipesDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(ARG_RECIPE)) {
+            // Load the recipe specified by the fragment arguments.
+            mRecipe = (Recipe) getArguments().getSerializable(ARG_RECIPE);
 
             Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            CollapsingToolbarLayout appBarLayout = activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(mRecipe.getName());
             }
         }
     }
@@ -61,8 +59,8 @@ public class RecipesDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.recipes_detail, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.recipes_detail)).setText(mItem.details);
+        if (mRecipe != null) {
+            ((TextView) rootView.findViewById(R.id.recipes_detail)).setText(String.valueOf(mRecipe.getServings()));
         }
 
         return rootView;
