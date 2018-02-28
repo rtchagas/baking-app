@@ -7,4 +7,5 @@
     <string name="alt_step_movie">A movie guide is available</string>
     <string name="step_number">step %d</string>
     <string name="alt_step_thumb">Image thumbnail for this step</string>
+    <string name="step_video_available">guide available</string>
 </resources>

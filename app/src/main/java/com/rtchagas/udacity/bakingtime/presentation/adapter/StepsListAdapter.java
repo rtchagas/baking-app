@@ -81,9 +81,11 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Reci
         // Has video or not
         if (TextUtils.isEmpty(step.getVideoURL())) {
             holder.imageVideo.setVisibility(View.INVISIBLE);
+            holder.textVideoAvailable.setVisibility(View.INVISIBLE);
         }
         else {
             holder.imageVideo.setVisibility(View.VISIBLE);
+            holder.textVideoAvailable.setVisibility(View.VISIBLE);
         }
 
         // Step image thumbnail (if available)
@@ -121,6 +123,9 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Reci
 
         @BindView(R.id.image_step_video)
         ImageView imageVideo;
+
+        @BindView(R.id.text_video_available)
+        TextView textVideoAvailable;
 
         RecipeViewHolder(View view) {
             super(view);

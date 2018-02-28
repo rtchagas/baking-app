@@ -6,5 +6,5 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_radius">6dp</dimen>
     <dimen name="divider_receipts_size">16dp</dimen>
-    <dimen name="img_step_thumb_width">100dp</dimen>
+    <dimen name="img_step_thumb_width">108dp</dimen>
 </resources>
