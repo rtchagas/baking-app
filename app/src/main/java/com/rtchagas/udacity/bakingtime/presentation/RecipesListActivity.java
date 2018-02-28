@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.controller.OnRecipesResultListener;
@@ -35,6 +36,9 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
     // All views should be declared here
     @BindView(R.id.recyclerview_recipes)
     RecyclerView mRecyclerViewRecipes;
+
+    @BindView(R.id.progress_loading)
+    ProgressBar mProgressLoading;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -79,6 +83,7 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
     public void onResultReady(@Nullable List<Recipe> list) {
         mRecipeList = list;
         bindRecipesAdapter(mRecipeList);
+        setLoadingProgress(false);
     }
 
     @Override
@@ -92,6 +97,7 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
                     }
                 })
                 .show();
+        setLoadingProgress(false);
     }
 
     private void setupRecyclerView() {
@@ -120,7 +126,11 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
     }
 
     private void loadRecipesAsync() {
+        setLoadingProgress(true);
         RecipesController.getInstance().loadRecipesAsync(this);
     }
 
+    private void setLoadingProgress(boolean isLoading) {
+        mProgressLoading.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
+    }
 }

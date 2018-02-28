@@ -21,6 +21,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        style="@style/Base.Widget.AppCompat.ProgressBar"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_recipes"
         android:layout_width="match_parent"
