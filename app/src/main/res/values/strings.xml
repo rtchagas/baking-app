@@ -3,4 +3,5 @@
     <string name="title_recipes_detail">Recipes Detail</string>
     <string name="retry">Retry</string>
     <string name="recipes_loading_error">Couldn\'t load the recipes.</string>
+    <string name="alt_recipe_image">Recipe\'s illustrative image</string>
 </resources>

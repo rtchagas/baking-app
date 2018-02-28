@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rtchagas.udacity.bakingtime.R;
@@ -14,13 +16,17 @@ import com.rtchagas.udacity.bakingtime.core.Recipe;
 import com.rtchagas.udacity.bakingtime.presentation.RecipesDetailActivity;
 import com.rtchagas.udacity.bakingtime.presentation.RecipesDetailFragment;
 import com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
     private final RecipesListActivity mParentActivity;
-    private final List<Recipe> mValues;
+    private final List<Recipe> mRecipeList;
     private final boolean mTwoPane;
 
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -46,40 +52,64 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     };
 
     public RecipeListAdapter(RecipesListActivity parent, List<Recipe> items, boolean twoPane) {
-        mValues = items;
+        mRecipeList = items;
         mParentActivity = parent;
         mTwoPane = twoPane;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_recipes_list, parent, false);
-        return new ViewHolder(view);
+        return new RecipeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mIdView.setText(String.valueOf(mValues.get(position).getId()));
-        holder.mContentView.setText(mValues.get(position).getName());
+    public void onBindViewHolder(final RecipeViewHolder holder, int position) {
 
-        holder.itemView.setTag(mValues.get(position));
+        Recipe recipe = mRecipeList.get(position);
+
+        // Recipe's name
+        holder.textName.setText(recipe.getName());
+
+        // Recipe's servings
+        holder.textServings.setText(String.valueOf(recipe.getServings()));
+
+        // Recipes image (if available)
+        if (!TextUtils.isEmpty(recipe.getImage())) {
+            Picasso.with(holder.itemView.getContext())
+                    .load(recipe.getImage())
+                    .into(holder.imageRecipe);
+        }
+        else {
+            Picasso.with(holder.itemView.getContext())
+                    .load(R.drawable.img_ingredients)
+                    .into(holder.imageRecipe);
+        }
+
+        holder.itemView.setTag(mRecipeList.get(position));
         holder.itemView.setOnClickListener(mOnClickListener);
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mRecipeList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
-        final TextView mIdView;
-        final TextView mContentView;
+    class RecipeViewHolder extends RecyclerView.ViewHolder {
 
-        ViewHolder(View view) {
+        @BindView(R.id.image_recipe)
+        ImageView imageRecipe;
+
+        @BindView(R.id.text_recipe_name)
+        TextView textName;
+
+        @BindView(R.id.text_recipe_serving)
+        TextView textServings;
+
+        RecipeViewHolder(View view) {
             super(view);
-            mIdView = view.findViewById(R.id.id_text);
-            mContentView = view.findViewById(R.id.content);
+            ButterKnife.bind(this, view);
         }
     }
 }
