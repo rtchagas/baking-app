@@ -10,28 +10,24 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity">
+    tools:context="com.rtchagas.udacity.bakingtime.presentation.StepsListActivity">
 
     <!--
-    This layout is a two-pane layout for the Recipes
+    This layout is a two-pane layout for the Steps
     master/detail flow.
     
     -->
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recyclerview_recipes"
-        android:name="com.rtchagas.udacity.bakingtime.RecipesListFragment"
+        android:id="@+id/recyclerview_steps"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity"
-        tools:listitem="@layout/item_recipes_list" />
+        tools:listitem="@layout/item_step_list" />
 
     <FrameLayout
-        android:id="@+id/recipes_detail_container"
+        android:id="@+id/steps_detail_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3" />

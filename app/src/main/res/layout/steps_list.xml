@@ -5,14 +5,9 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview_recipes"
-        android:name="com.rtchagas.udacity.bakingtime.RecipesListFragment"
+        android:id="@+id/recyclerview_steps"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        tools:context="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity"
-        tools:listitem="@layout/item_recipes_list" />
+        tools:listitem="@layout/item_step_list" />
 
 </android.support.design.widget.CoordinatorLayout>

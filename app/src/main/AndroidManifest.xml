@@ -11,7 +11,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".presentation.RecipesListActivity"
             android:label="@string/app_name"
@@ -23,13 +22,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.RecipesDetailActivity"
-            android:label="@string/title_recipes_detail"
+            android:name=".presentation.StepsListActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".presentation.RecipesListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".presentation.StepDetailActivity"
+            android:label="@string/title_steps_detail"
+            android:parentActivityName=".presentation.StepsListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rtchagas.udacity.bakingtime.presentation.RecipesListActivity" />
+                android:value="com.rtchagas.udacity.bakingtime.presentation.StepsListActivity" />
         </activity>
     </application>
 
