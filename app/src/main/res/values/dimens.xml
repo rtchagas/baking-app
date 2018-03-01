@@ -8,5 +8,5 @@
     <dimen name="recipe_backdrop_height">128dp</dimen>
     <dimen name="step_thumbnail_width">108dp</dimen>
     <dimen name="ingredients_backdrop_height">100dp</dimen>
-    <dimen name="step_video_height">280dp</dimen>
+    <dimen name="step_video_height">260dp</dimen>
 </resources>
