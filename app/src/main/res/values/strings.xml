@@ -9,4 +9,8 @@
     <string name="alt_step_thumb">Image thumbnail for this step</string>
     <string name="step_video_available">guide available</string>
     <string name="alt_recipe_serving">Servings</string>
+    <string name="ingredients">Ingredients</string>
+    <!-- "1.2 kg of rice" -->
+    <string name="ingredient_format">%s %s of %s</string>
+
 </resources>
