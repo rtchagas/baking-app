@@ -46,7 +46,7 @@ public class StepDetailActivity extends AppCompatActivity {
 
         // Set the backdrop
         ImageView imageStepBackdrop = findViewById(R.id.image_step_backdrop);
-        Picasso.with(this).load(R.drawable.img_cooking_step).into(imageStepBackdrop);
+        Picasso.with(this).load(R.drawable.img_cooking_step2).into(imageStepBackdrop);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity

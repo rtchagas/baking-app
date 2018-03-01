@@ -11,12 +11,20 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <!-- Expanded toolbar text appearance -->
+    <style name="ToolbarExpandedTextWithShadow" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:shadowColor">@color/material_black</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" >
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <item name="android:windowActionBarOverlay">true</item>
         <!-- Support library compatibility -->

@@ -128,23 +128,25 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (TextUtils.isEmpty(step.getVideoURL())) {
             holder.imageVideo.setVisibility(View.INVISIBLE);
             holder.textVideoAvailable.setVisibility(View.INVISIBLE);
+            holder.imageStepThumb.setVisibility(View.GONE);
         }
         else {
             holder.imageVideo.setVisibility(View.VISIBLE);
             holder.textVideoAvailable.setVisibility(View.VISIBLE);
-        }
+            holder.imageStepThumb.setVisibility(View.VISIBLE);
 
-        // Step image thumbnail (if available)
-        if (!TextUtils.isEmpty(step.getThumbnailURL())) {
-            Picasso.with(context)
-                    .load(step.getThumbnailURL())
-                    .error(R.drawable.img_cooking_step_thumb)
-                    .into(holder.imageStepThumb);
-        }
-        else {
-            Picasso.with(holder.itemView.getContext())
-                    .load(R.drawable.img_cooking_step_thumb)
-                    .into(holder.imageStepThumb);
+            // Step image thumbnail (if available)
+            if (!TextUtils.isEmpty(step.getThumbnailURL())) {
+                Picasso.with(context)
+                        .load(step.getThumbnailURL())
+                        .error(R.drawable.img_cooking_step_thumb)
+                        .into(holder.imageStepThumb);
+            }
+            else {
+                Picasso.with(holder.itemView.getContext())
+                        .load(R.drawable.img_cooking_step_thumb)
+                        .into(holder.imageStepThumb);
+            }
         }
 
         holder.itemView.setTag(step);
