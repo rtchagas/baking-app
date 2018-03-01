@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Baking Time</string>
-    <string name="title_steps_detail">Recipes Detail</string>
+    <string name="title_steps_detail">Step description</string>
     <string name="retry">Retry</string>
     <string name="recipes_loading_error">Couldn\'t load the recipes.</string>
     <string name="alt_recipe_image">Recipe\'s illustrative image</string>
@@ -12,6 +12,9 @@
     <string name="ingredients">Ingredients</string>
     <!-- "1.2 kg of rice" -->
     <string name="ingredient_format">%s %s of %s</string>
+    <string name="alt_step_backdrop">Step backdrop</string>
+
+
     <plurals name="recipe_servings_description">
         <item quantity="one">Makes %d serving</item>
         <item quantity="other">Makes %d servings</item>

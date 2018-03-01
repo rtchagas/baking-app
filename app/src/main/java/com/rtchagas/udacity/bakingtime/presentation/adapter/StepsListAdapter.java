@@ -138,12 +138,12 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         if (!TextUtils.isEmpty(step.getThumbnailURL())) {
             Picasso.with(context)
                     .load(step.getThumbnailURL())
-                    .error(R.drawable.img_step_thumb)
+                    .error(R.drawable.img_cooking_step_thumb)
                     .into(holder.imageStepThumb);
         }
         else {
             Picasso.with(holder.itemView.getContext())
-                    .load(R.drawable.img_step_thumb)
+                    .load(R.drawable.img_cooking_step_thumb)
                     .into(holder.imageStepThumb);
         }
 
