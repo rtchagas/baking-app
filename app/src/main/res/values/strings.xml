@@ -12,5 +12,9 @@
     <string name="ingredients">Ingredients</string>
     <!-- "1.2 kg of rice" -->
     <string name="ingredient_format">%s %s of %s</string>
+    <plurals name="recipe_servings_description">
+        <item quantity="one">Makes %d serving</item>
+        <item quantity="other">Makes %d servings</item>
+    </plurals>
 
 </resources>

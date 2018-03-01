@@ -51,22 +51,26 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
     @Override
     public void onBindViewHolder(final RecipeViewHolder holder, int position) {
 
+        Context context = holder.itemView.getContext();
+
         Recipe recipe = mRecipeList.get(position);
 
         // Recipe's name
         holder.textName.setText(recipe.getName());
 
         // Recipe's servings
-        holder.textServings.setText(String.valueOf(recipe.getServings()));
+        int servings = recipe.getServings();
+        holder.textServings.setText(context.getResources()
+                .getQuantityString(R.plurals.recipe_servings_description, servings, servings));
 
         // Recipes image (if available)
         if (!TextUtils.isEmpty(recipe.getImage())) {
-            Picasso.with(holder.itemView.getContext())
+            Picasso.with(context)
                     .load(recipe.getImage())
                     .error(R.drawable.img_recipe_ingredients)
                     .into(holder.imageRecipe);
         } else {
-            Picasso.with(holder.itemView.getContext())
+            Picasso.with(context)
                     .load(R.drawable.img_recipe_ingredients)
                     .into(holder.imageRecipe);
         }
