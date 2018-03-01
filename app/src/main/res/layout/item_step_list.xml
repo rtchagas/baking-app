@@ -15,7 +15,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:gravity="start"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/image_step_thumb"
         app:layout_constraintStart_toStartOf="@+id/text_step_count"

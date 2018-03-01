@@ -43,17 +43,16 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 arguments.putSerializable(StepDetailFragment.ARG_STEP, item);
                 StepDetailFragment fragment = new StepDetailFragment();
                 fragment.setArguments(arguments);
-                /*
+                // Show the fragment
                 mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.recipes_detail_container, fragment)
+                        .replace(R.id.step_detail_container, fragment)
                         .commit();
-                */
             }
             else {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, StepDetailActivity.class);
                 intent.putExtra(StepDetailFragment.ARG_STEP, item);
-                //context.startActivity(intent);
+                context.startActivity(intent);
             }
         }
     };

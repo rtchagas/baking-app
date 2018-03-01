@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,11 +10,13 @@
         android:id="@+id/image_ingredients_bg"
         android:layout_width="0dp"
         android:layout_height="@dimen/ingredients_backdrop_height"
+        android:background="@color/primaryTextColor"
+        android:elevation="2dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_recipe_ingredients_linear"/>
+        app:srcCompat="@drawable/img_recipe_ingredients_linear" />
 
     <TextView
         android:id="@+id/text_ingredients_title"
@@ -29,10 +30,11 @@
         android:shadowDy="2"
         android:shadowRadius="4"
         android:text="@string/ingredients"
+        android:elevation="2dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@color/material_white"
         app:layout_constraintBottom_toBottomOf="@id/image_ingredients_bg"
-        app:layout_constraintStart_toStartOf="@+id/image_ingredients_bg"/>
+        app:layout_constraintStart_toStartOf="@+id/image_ingredients_bg" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_ingredients"
@@ -44,6 +46,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_ingredients_bg"
-        tools:listitem="@layout/item_ingredient_single_item"/>
+        tools:listitem="@layout/item_ingredient_single_item" />
 
 </android.support.constraint.ConstraintLayout>
