@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_radius">4dp</dimen>
-    <dimen name="divider_receipts_size">16dp</dimen>
-    <dimen name="img_step_thumb_width">108dp</dimen>
+    <dimen name="recipe_divider_size">16dp</dimen>
+    <dimen name="recipe_backdrop_height">120dp</dimen>
+    <dimen name="step_thumbnail_width">108dp</dimen>
+    <dimen name="ingredients_backdrop_height">100dp</dimen>
 </resources>

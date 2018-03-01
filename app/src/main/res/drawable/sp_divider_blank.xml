@@ -3,6 +3,6 @@
     android:shape="rectangle">
     <solid android:color="@android:color/transparent" />
     <size
-        android:width="@dimen/divider_receipts_size"
-        android:height="@dimen/divider_receipts_size" />
+        android:width="@dimen/recipe_divider_size"
+        android:height="@dimen/recipe_divider_size" />
 </shape>

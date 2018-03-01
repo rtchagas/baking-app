@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -109,29 +110,8 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void bindIngredientsViewHolder(@NonNull Context context,
                                            @NonNull IngredientsViewHolder holder, int position) {
 
-        // We just need to run through all ingredients and concat them to the text view.
-        holder.textIngredientsList.setText("");
-        for (Ingredient ingredient : mRecipe.getIngredients()) {
-            holder.textIngredientsList.append(formatIngredient(context, ingredient) + "\n");
-        }
-    }
-
-    @SuppressWarnings("defaultlocale")
-    private String formatIngredient(@NonNull Context context, @NonNull Ingredient ingredient) {
-
-        // Get the measure
-        String measure = ingredient.getMeasure().toLowerCase();
-
-        // Get the quantity
-        double rawQuantity = ingredient.getQuantity();
-        String quantity = (rawQuantity % 1d > 0)
-                ? String.format("%.1f", rawQuantity)
-                : String.format("%.0f", rawQuantity);
-
-        // Get the ingredient name
-        String name = ingredient.getIngredient();
-
-        return context.getString(R.string.ingredient_format, quantity, measure, name);
+        // Nothing should be done here as the item
+        // is unique and always the same.
     }
 
     private void bindStepViewHolder(@NonNull Context context,
@@ -197,10 +177,70 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     class IngredientsViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.text_ingredients_list)
-        TextView textIngredientsList;
+        @BindView(R.id.recyclerview_ingredients)
+        RecyclerView recyclerIngredients;
 
         IngredientsViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+
+            // Configure the recycler view and set the adapter.
+            // This can be done only once here as the ingredients list
+            // is always the same for this recipe.
+            recyclerIngredients.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+            recyclerIngredients.setHasFixedSize(true);
+            recyclerIngredients.setNestedScrollingEnabled(false);
+            recyclerIngredients.setAdapter(new IngredientsListAdapter());
+        }
+    }
+
+    private class IngredientsListAdapter extends RecyclerView.Adapter<SingleIngredientViewHolder> {
+
+        @Override
+        public SingleIngredientViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_ingredient_single_item, parent, false);
+            return new SingleIngredientViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(SingleIngredientViewHolder holder, int position) {
+            Ingredient ingredient = mRecipe.getIngredients().get(position);
+            // Just format the ingredient as a single string and bind it.
+            holder.textIngredient.setText(
+                    formatIngredient(holder.itemView.getContext(), ingredient));
+        }
+
+        @Override
+        public int getItemCount() {
+            return (mRecipe.getIngredients() != null ? mRecipe.getIngredients().size() : 0);
+        }
+
+        @SuppressWarnings("defaultlocale")
+        private String formatIngredient(@NonNull Context context, @NonNull Ingredient ingredient) {
+
+            // Get the measure
+            String measure = ingredient.getMeasure().toLowerCase();
+
+            // Get the quantity
+            double rawQuantity = ingredient.getQuantity();
+            String quantity = (rawQuantity % 1d > 0)
+                    ? String.format("%.1f", rawQuantity)
+                    : String.format("%.0f", rawQuantity);
+
+            // Get the ingredient name
+            String name = ingredient.getIngredient();
+
+            return context.getString(R.string.ingredient_format, quantity, measure, name);
+        }
+    }
+
+    class SingleIngredientViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.text_ingredient_single)
+        TextView textIngredient;
+
+        public SingleIngredientViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

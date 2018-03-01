@@ -46,7 +46,7 @@
 
     <ImageView
         android:id="@+id/image_step_thumb"
-        android:layout_width="@dimen/img_step_thumb_width"
+        android:layout_width="@dimen/step_thumbnail_width"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@string/alt_step_thumb"
