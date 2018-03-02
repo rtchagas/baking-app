@@ -2,7 +2,6 @@ package com.rtchagas.udacity.bakingtime.presentation.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -173,10 +172,8 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Step item = (Step) view.getTag();
 
             if (mTwoPane) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(StepDetailFragment.ARG_STEP, item);
-                StepDetailFragment fragment = new StepDetailFragment();
-                fragment.setArguments(arguments);
+                // Create the fragment
+                StepDetailFragment fragment = StepDetailFragment.newInstance(item, true);
                 // Show the fragment
                 mParentActivity.getSupportFragmentManager().beginTransaction()
                         .replace(R.id.step_detail_container, fragment)

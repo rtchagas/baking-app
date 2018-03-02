@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -27,6 +28,8 @@ import com.google.android.exoplayer2.util.Util;
 import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Step;
 
+import java.security.InvalidParameterException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -42,18 +45,25 @@ public class StepDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_STEP = "arg_step";
+    private static final String ARG_IS_TWO_PANE = "arg_two_pane";
 
-    private static final String STATE_PLAYER_POSITION = "player_position";
+    private static final String STATE_PLAYER_POSITION = "state_player_position";
 
     // Views
+    @BindView(R.id.layout_root_fragment_step)
+    ConstraintLayout mRootView;
+
     @BindView(R.id.player_view)
     PlayerView mPlayerView;
+
     @BindView(R.id.text_step_description)
     TextView mTextStepDescription;
 
     private Step mStep = null;
     private ExoPlayer mExoPlayer = null;
     private long mPlayerCurrentPosition = -1L;
+
+    private boolean mIsTwoPane = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -62,14 +72,26 @@ public class StepDetailFragment extends Fragment {
     public StepDetailFragment() {
     }
 
+    public static StepDetailFragment newInstance(Step step, boolean isTwoPane) {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(ARG_STEP, step);
+        arguments.putBoolean(ARG_IS_TWO_PANE, isTwoPane);
+        StepDetailFragment fragment = new StepDetailFragment();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_STEP)) {
-            // Load the recipe specified by the fragment arguments.
-            mStep = (Step) getArguments().getSerializable(ARG_STEP);
+        // Load the step specified by the fragment arguments.
+        mStep = (Step) getArguments().getSerializable(ARG_STEP);
+        if (mStep == null) {
+            throw new InvalidParameterException("Arguments[Step] must not be null!");
         }
+
+        mIsTwoPane = getArguments().getBoolean(ARG_IS_TWO_PANE, false);
 
         // Restore player's position, if available.
         if (savedInstanceState != null) {
@@ -101,6 +123,11 @@ public class StepDetailFragment extends Fragment {
 
         // Fill the step details
         mTextStepDescription.setText(mStep.getDescription());
+
+        // Check if need to enter in fullscreen mode
+        boolean isFullscreenMode = (!mIsTwoPane
+                && getResources().getBoolean(R.bool.is_video_fullscreen));
+        prepareFullscreenMode(isFullscreenMode);
     }
 
     @Override
@@ -160,6 +187,32 @@ public class StepDetailFragment extends Fragment {
         if (mPlayerCurrentPosition > 0) {
             mExoPlayer.seekTo(mPlayerCurrentPosition);
         }
+    }
+
+    private void prepareFullscreenMode(boolean isFullscreenMode) {
+        if (isFullscreenMode) {
+            mTextStepDescription.setVisibility(View.GONE);
+            enableFullScreen();
+        }
+        else {
+            mTextStepDescription.setVisibility(View.VISIBLE);
+            disableFullScreen();
+        }
+    }
+
+    private void enableFullScreen() {
+        getActivity().getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    private void disableFullScreen() {
+        getActivity().getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     private void releasePlayer() {
