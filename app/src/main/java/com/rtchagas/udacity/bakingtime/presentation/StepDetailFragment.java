@@ -43,19 +43,18 @@ public class StepDetailFragment extends Fragment {
      */
     public static final String ARG_STEP = "arg_step";
 
-    /**
-     * The step this fragment is presenting.
-     */
-    private Step mStep = null;
-
-    private ExoPlayer mExoPlayer = null;
+    private static final String STATE_PLAYER_POSITION = "player_position";
 
     // Views
     @BindView(R.id.player_view)
     PlayerView mPlayerView;
-
     @BindView(R.id.text_step_description)
     TextView mTextStepDescription;
+
+    private Step mStep = null;
+    private ExoPlayer mExoPlayer = null;
+    private long mPlayerCurrentPosition = -1L;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -70,6 +69,11 @@ public class StepDetailFragment extends Fragment {
         if (getArguments().containsKey(ARG_STEP)) {
             // Load the recipe specified by the fragment arguments.
             mStep = (Step) getArguments().getSerializable(ARG_STEP);
+        }
+
+        // Restore player's position, if available.
+        if (savedInstanceState != null) {
+            mPlayerCurrentPosition = savedInstanceState.getLong(STATE_PLAYER_POSITION, -1L);
         }
     }
 
@@ -111,6 +115,15 @@ public class StepDetailFragment extends Fragment {
         releasePlayer();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mPlayerCurrentPosition > 0) {
+            outState.putLong(STATE_PLAYER_POSITION, mPlayerCurrentPosition);
+        }
+    }
+
     private void initializeExoPlayer() {
 
         if (mExoPlayer == null) {
@@ -142,9 +155,18 @@ public class StepDetailFragment extends Fragment {
             mExoPlayer.prepare(videoSource);
             mExoPlayer.setPlayWhenReady(true);
         }
+
+        // Restore the position, if available.
+        if (mPlayerCurrentPosition > 0) {
+            mExoPlayer.seekTo(mPlayerCurrentPosition);
+        }
     }
 
     private void releasePlayer() {
+
+        // Save the current position
+        mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
+
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
