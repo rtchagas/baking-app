@@ -89,7 +89,8 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
     @Override
     public void onResultError(@Nullable String message) {
         Log.w(TAG, message);
-        Snackbar.make(mRecyclerViewRecipes, R.string.recipes_loading_error, Snackbar.LENGTH_LONG)
+        Snackbar.make(mRecyclerViewRecipes, R.string.recipes_loading_error,
+                Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
