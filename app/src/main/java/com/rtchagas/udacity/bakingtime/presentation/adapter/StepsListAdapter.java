@@ -34,28 +34,8 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private final Recipe mRecipe;
     private final boolean mTwoPane;
 
-    private final View.OnClickListener mOnStepClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Step item = (Step) view.getTag();
-            if (mTwoPane) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(StepDetailFragment.ARG_STEP, item);
-                StepDetailFragment fragment = new StepDetailFragment();
-                fragment.setArguments(arguments);
-                // Show the fragment
-                mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.step_detail_container, fragment)
-                        .commit();
-            }
-            else {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(StepDetailFragment.ARG_STEP, item);
-                context.startActivity(intent);
-            }
-        }
-    };
+    // To control the recycler view selected item
+    private int mSelectedPos = RecyclerView.NO_POSITION;
 
     public StepsListAdapter(StepsListActivity parent, Recipe recipe, boolean twoPane) {
         mRecipe = recipe;
@@ -150,10 +130,12 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         holder.itemView.setTag(step);
-        holder.itemView.setOnClickListener(mOnStepClickListener);
+
+        // Update selected position
+        holder.itemView.setSelected(mSelectedPos == position);
     }
 
-    class StepViewHolder extends RecyclerView.ViewHolder {
+    class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.image_step_thumb)
         ImageView imageStepThumb;
@@ -173,6 +155,39 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         StepViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+
+            // Below line is just like a safety check, because sometimes holder could be null,
+            // in that case, getAdapterPosition() will return RecyclerView.NO_POSITION
+            if (getAdapterPosition() == RecyclerView.NO_POSITION) return;
+
+            // Updating old as well as new selected positions
+            notifyItemChanged(mSelectedPos);
+            mSelectedPos = getAdapterPosition();
+            notifyItemChanged(mSelectedPos);
+
+            Step item = (Step) view.getTag();
+
+            if (mTwoPane) {
+                Bundle arguments = new Bundle();
+                arguments.putSerializable(StepDetailFragment.ARG_STEP, item);
+                StepDetailFragment fragment = new StepDetailFragment();
+                fragment.setArguments(arguments);
+                // Show the fragment
+                mParentActivity.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.step_detail_container, fragment)
+                        .commit();
+            }
+            else {
+                Context context = view.getContext();
+                Intent intent = new Intent(context, StepDetailActivity.class);
+                intent.putExtra(StepDetailFragment.ARG_STEP, item);
+                context.startActivity(intent);
+            }
         }
     }
 
