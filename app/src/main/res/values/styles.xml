@@ -11,6 +11,13 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <style name="TextWithShadow">
+        <item name="android:shadowColor">@color/material_black</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+
     <!-- Expanded toolbar text appearance -->
     <style name="ToolbarExpandedTextWithShadow" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
         <item name="android:textSize">24sp</item>
@@ -33,6 +40,6 @@
 
     </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

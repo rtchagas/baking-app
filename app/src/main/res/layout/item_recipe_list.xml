@@ -35,15 +35,12 @@
 
         <TextView
             android:id="@+id/text_recipe_name"
+            style="@style/TextWithShadow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:gravity="center"
-            android:shadowColor="@color/material_black"
-            android:shadowDx="4"
-            android:shadowDy="4"
-            android:shadowRadius="4"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textColor="@color/material_white"
             app:layout_constraintBottom_toTopOf="@+id/frame_recipe_name_bg"
