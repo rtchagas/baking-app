@@ -181,8 +181,6 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             if (getAdapterPosition() == RecyclerView.NO_POSITION) return;
 
             int newPosition = getAdapterPosition();
-            // Do not fire the click twice on same item.
-            if (mSelectedPosition == newPosition) return;
 
             // Updating old as well as new selected positions
             notifyItemChanged(mSelectedPosition);

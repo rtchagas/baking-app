@@ -122,6 +122,11 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
 
         if (position < 0) return;
 
+        // Do not replace the same step fragment
+        if (mTwoPane && (mSelectedStep == position)) {
+            return;
+        }
+
         mSelectedStep = position;
         showSelectedStep();
     }
@@ -131,6 +136,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
         Step step = mRecipe.getSteps().get(mSelectedStep);
 
         if (mTwoPane) {
+
             // Create the fragment
             Bundle arguments = new Bundle();
             arguments.putSerializable(ARG_STEP, step);
