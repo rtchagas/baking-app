@@ -48,13 +48,11 @@ public class StepDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_STEP = "arg_step";
-    private static final String STATE_PLAYER_WINDOW = "state_player_window";
     private static final String STATE_PLAYER_POSITION = "state_player_position";
 
     private Step mStep = null;
 
     private ExoPlayer mExoPlayer = null;
-    private int mPlayerCurrentWindow = C.INDEX_UNSET;
     private long mPlayerCurrentPosition = C.TIME_UNSET;
 
     private boolean mIsTwoPane = false;
@@ -90,7 +88,6 @@ public class StepDetailFragment extends Fragment {
 
         // Restore player's position, if available.
         if (savedInstanceState != null) {
-            mPlayerCurrentWindow = savedInstanceState.getInt(STATE_PLAYER_WINDOW);
             mPlayerCurrentPosition = savedInstanceState.getLong(STATE_PLAYER_POSITION);
         }
     }
@@ -149,7 +146,6 @@ public class StepDetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(STATE_PLAYER_WINDOW, mPlayerCurrentWindow);
         outState.putLong(STATE_PLAYER_POSITION, mPlayerCurrentPosition);
     }
 
@@ -189,10 +185,8 @@ public class StepDetailFragment extends Fragment {
 
     private void initializeExoPlayer() {
 
-        if (TextUtils.isEmpty(mStep.getVideoURL())) {
-            // This step has no video...
-            return;
-        }
+        // This step has no video...
+        if (TextUtils.isEmpty(mStep.getVideoURL())) return;
 
         if (mExoPlayer == null) {
 
@@ -228,9 +222,8 @@ public class StepDetailFragment extends Fragment {
         }
 
         // Restore the position, if available.
-        boolean haveResumePosition = (mPlayerCurrentWindow != C.INDEX_UNSET);
-        if (haveResumePosition) {
-            mExoPlayer.seekTo(mPlayerCurrentWindow, mPlayerCurrentPosition);
+        if (mPlayerCurrentPosition > 0) {
+            mExoPlayer.seekTo(mPlayerCurrentPosition);
         }
 
         // Check if need to enter in fullscreen video mode
@@ -245,7 +238,6 @@ public class StepDetailFragment extends Fragment {
         if (mExoPlayer != null) {
 
             // Save the current position
-            mPlayerCurrentWindow = mExoPlayer.getCurrentWindowIndex();
             mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
 
             mExoPlayer.stop();
