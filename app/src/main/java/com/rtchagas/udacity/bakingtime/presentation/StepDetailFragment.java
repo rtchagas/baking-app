@@ -1,5 +1,6 @@
 package com.rtchagas.udacity.bakingtime.presentation;
 
+import android.app.Dialog;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,8 +11,10 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -47,6 +50,7 @@ public class StepDetailFragment extends Fragment {
     public static final String ARG_STEP = "arg_step";
     private static final String ARG_IS_TWO_PANE = "arg_two_pane";
 
+    private static final String STATE_PLAYER_WINDOW = "state_player_window";
     private static final String STATE_PLAYER_POSITION = "state_player_position";
 
     // Views
@@ -54,16 +58,20 @@ public class StepDetailFragment extends Fragment {
     ConstraintLayout mRootView;
 
     @BindView(R.id.player_view)
-    PlayerView mPlayerView;
+    PlayerView mExoPlayerView;
 
     @BindView(R.id.text_step_description)
     TextView mTextStepDescription;
 
     private Step mStep = null;
+
     private ExoPlayer mExoPlayer = null;
-    private long mPlayerCurrentPosition = -1L;
+    private int mPlayerCurrentWindow = C.INDEX_UNSET;
+    private long mPlayerCurrentPosition = C.TIME_UNSET;
 
     private boolean mIsTwoPane = false;
+
+    private Dialog mFullScreenDialog = null;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -95,7 +103,8 @@ public class StepDetailFragment extends Fragment {
 
         // Restore player's position, if available.
         if (savedInstanceState != null) {
-            mPlayerCurrentPosition = savedInstanceState.getLong(STATE_PLAYER_POSITION, -1L);
+            mPlayerCurrentWindow = savedInstanceState.getInt(STATE_PLAYER_WINDOW);
+            mPlayerCurrentPosition = savedInstanceState.getLong(STATE_PLAYER_POSITION);
         }
     }
 
@@ -114,20 +123,15 @@ public class StepDetailFragment extends Fragment {
 
         // Initialize the Player view
         if (TextUtils.isEmpty(mStep.getVideoURL())) {
-            mPlayerView.setVisibility(View.GONE);
+            mExoPlayerView.setVisibility(View.GONE);
         }
         else {
-            mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(
+            mExoPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(
                     getResources(), R.drawable.img_cooking_step));
         }
 
         // Fill the step details
         mTextStepDescription.setText(mStep.getDescription());
-
-        // Check if need to enter in fullscreen mode
-        boolean isFullscreenMode = (!mIsTwoPane
-                && getResources().getBoolean(R.bool.is_video_fullscreen));
-        prepareFullscreenMode(isFullscreenMode);
     }
 
     @Override
@@ -143,17 +147,62 @@ public class StepDetailFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        // If activity is not visible, we can dismiss the fullscreen dialog.
+        if (mFullScreenDialog != null) {
+            mFullScreenDialog.dismiss();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if (mPlayerCurrentPosition > 0) {
-            outState.putLong(STATE_PLAYER_POSITION, mPlayerCurrentPosition);
+        outState.putInt(STATE_PLAYER_WINDOW, mPlayerCurrentWindow);
+        outState.putLong(STATE_PLAYER_POSITION, mPlayerCurrentPosition);
+    }
+
+    private void initFullscreenDialog() {
+
+        mFullScreenDialog = new Dialog(getActivity(), android.R.style.Theme_Black_NoTitleBar) {
+            @Override
+            public void onBackPressed() {
+                // Finish the activity.
+                getActivity().finish();
+            }
+        };
+
+        // Set it full screen immersive
+        Window window = mFullScreenDialog.getWindow();
+        if (window != null) {
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
+    }
+
+    private void openFullscreenDialog() {
+
+        ((ViewGroup) mExoPlayerView.getParent()).removeView(mExoPlayerView);
+
+        mFullScreenDialog.addContentView(mExoPlayerView,
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+
+        mFullScreenDialog.show();
     }
 
     private void initializeExoPlayer() {
 
         if (mExoPlayer == null) {
+
+            // Init the fullscreen dialog
+            initFullscreenDialog();
 
             // Get the step video URI
             Uri mediaUri = Uri.parse(mStep.getVideoURL());
@@ -169,7 +218,7 @@ public class StepDetailFragment extends Fragment {
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
 
             // 3. Attach the player to the view
-            mPlayerView.setPlayer(mExoPlayer);
+            mExoPlayerView.setPlayer(mExoPlayer);
 
             // 4. Prepare the media source
             // Produces DataSource instances through which media data is loaded.
@@ -184,40 +233,22 @@ public class StepDetailFragment extends Fragment {
         }
 
         // Restore the position, if available.
-        if (mPlayerCurrentPosition > 0) {
-            mExoPlayer.seekTo(mPlayerCurrentPosition);
+        boolean haveResumePosition = (mPlayerCurrentWindow != C.INDEX_UNSET);
+        if (haveResumePosition) {
+            mExoPlayer.seekTo(mPlayerCurrentWindow, mPlayerCurrentPosition);
         }
-    }
 
-    private void prepareFullscreenMode(boolean isFullscreenMode) {
+        // Check if need to enter in fullscreen mode
+        boolean isFullscreenMode = (!mIsTwoPane && getResources().getBoolean(R.bool.is_landscape));
         if (isFullscreenMode) {
-            mTextStepDescription.setVisibility(View.GONE);
-            enableFullScreen();
+            openFullscreenDialog();
         }
-        else {
-            mTextStepDescription.setVisibility(View.VISIBLE);
-            disableFullScreen();
-        }
-    }
-
-    private void enableFullScreen() {
-        getActivity().getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-
-    private void disableFullScreen() {
-        getActivity().getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     private void releasePlayer() {
 
         // Save the current position
+        mPlayerCurrentWindow =  mExoPlayer.getCurrentWindowIndex();
         mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
 
         mExoPlayer.stop();

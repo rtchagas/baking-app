@@ -2,6 +2,6 @@
 <resources>
     
     <integer name="grid_recipes_columns">1</integer>
-    <bool name="is_video_fullscreen">false</bool>
+    <bool name="is_landscape">false</bool>
     
 </resources>
