@@ -21,6 +21,14 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * This is a composite adapter that displays the ingredient list as the first item
+ * in the list and all the steps right below. <br/>
+ * To make things easier it was decided to just manipulate the Adapter getCount()
+ * and the position while binding the steps. <br/>
+ * But we could'e used a mixes list of Objects as input and decided how to bind
+ * each ViewHolder based on a simple instanceOf comparison.
+ */
 public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEWTYPE_INGREDIENTS = 1;
@@ -77,7 +85,11 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     @Override
     public int getItemCount() {
-        return (mRecipe.getSteps() != null ? mRecipe.getSteps().size() : 0);
+
+        int stepsCount = (mRecipe.getSteps() != null ? mRecipe.getSteps().size() : 0);
+
+        // Added +1 due to ingredients item in the first position
+        return (stepsCount + 1);
     }
 
     public void setSelectedPosition(int position) {
@@ -94,7 +106,11 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private void bindStepViewHolder(@NonNull Context context,
                                     @NonNull StepViewHolder holder, int position) {
 
-        Step step = mRecipe.getSteps().get(position);
+        // The step listing always begin at the position 1
+        // So must adjust the index here
+        int stepIndex = (position - 1);
+
+        Step step = mRecipe.getSteps().get(stepIndex);
 
         // Step's summary
         holder.textStepDescription.setText(step.getShortDescription());
@@ -127,7 +143,7 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
 
-        holder.itemView.setTag(position);
+        holder.itemView.setTag(stepIndex);
 
         // Update selected position
         holder.itemView.setSelected(mSelectedPosition == position);
