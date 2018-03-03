@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:contentDescription="@string/alt_step_thumb"
-        android:src="@drawable/img_cooking_step_thumb"
+        android:src="@drawable/img_backing_step_thumb"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

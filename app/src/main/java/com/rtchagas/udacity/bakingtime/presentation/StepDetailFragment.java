@@ -130,7 +130,7 @@ public class StepDetailFragment extends Fragment implements PlaybackPreparer {
         }
         else {
             mExoPlayerView.setDefaultArtwork(BitmapFactory.decodeResource(
-                    getResources(), R.drawable.img_cooking_step));
+                    getResources(), R.drawable.img_baking_step_big));
         }
 
         // Fill the step details

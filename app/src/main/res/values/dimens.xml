@@ -5,7 +5,7 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="card_radius">4dp</dimen>
     <dimen name="recipe_divider_size">16dp</dimen>
-    <dimen name="recipe_backdrop_height">128dp</dimen>
+    <dimen name="recipe_backdrop_height">144dp</dimen>
     <dimen name="step_thumbnail_width">108dp</dimen>
     <dimen name="ingredients_backdrop_height">100dp</dimen>
     <dimen name="step_fragment_padding">16dp</dimen>

@@ -2,13 +2,11 @@ package com.rtchagas.udacity.bakingtime.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.rtchagas.udacity.bakingtime.R;
@@ -49,7 +47,7 @@ public class StepDetailActivity extends AppCompatActivity {
             appBarLayout.setTitle(step.getShortDescription());
             // Set the backdrop
             ImageView imageStepBackdrop = findViewById(R.id.image_step_backdrop);
-            Picasso.with(this).load(R.drawable.img_cooking_step2).into(imageStepBackdrop);
+            Picasso.with(this).load(R.drawable.img_backing_step_backdrop).into(imageStepBackdrop);
         }
 
         // savedInstanceState is non-null when there is fragment state

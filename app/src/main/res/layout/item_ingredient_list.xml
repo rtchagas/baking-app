@@ -11,7 +11,7 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/ingredients_backdrop_height"
         android:background="@color/primaryTextColor"
-        android:elevation="2dp"
+        android:elevation="@dimen/material_elevation_card"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

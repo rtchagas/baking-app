@@ -25,8 +25,8 @@
         <FrameLayout
             android:id="@+id/frame_recipe_name_bg"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/sp_recipe_title_bg"
+            android:layout_height="48dp"
+            android:background="@color/colorPrimaryLight88"
             app:layout_constraintBottom_toBottomOf="@id/image_recipe"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
