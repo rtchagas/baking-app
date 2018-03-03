@@ -15,8 +15,12 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.PlaybackPreparer;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -42,18 +46,23 @@ import butterknife.ButterKnife;
  * in two-pane mode (on tablets) or a {@link StepDetailActivity}
  * on handsets.
  */
-public class StepDetailFragment extends Fragment {
+public class StepDetailFragment extends Fragment implements PlaybackPreparer {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_STEP = "arg_step";
+    private static final String STATE_PLAYER_WINDOW = "state_player_window";
     private static final String STATE_PLAYER_POSITION = "state_player_position";
+    private static final String STATE_PLAYER_IS_PLAYING = "state_player_is_playing";
 
     private Step mStep = null;
 
     private ExoPlayer mExoPlayer = null;
+    private int mPlayerCurrentWindow = C.INDEX_UNSET;
     private long mPlayerCurrentPosition = C.TIME_UNSET;
+    private boolean mPlayerIsPlaying = true;
+    private boolean mInErrorState = false;
 
     private boolean mIsTwoPane = false;
 
@@ -69,6 +78,8 @@ public class StepDetailFragment extends Fragment {
     @BindView(R.id.text_step_description)
     TextView mTextStepDescription;
 
+    private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -80,6 +91,9 @@ public class StepDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        clearResumePosition();
+        mPlayerIsPlaying = true;
+
         // Load the step specified by the fragment arguments.
         mStep = (Step) getArguments().getSerializable(ARG_STEP);
         if (mStep == null) {
@@ -88,6 +102,8 @@ public class StepDetailFragment extends Fragment {
 
         // Restore player's position, if available.
         if (savedInstanceState != null) {
+            mPlayerIsPlaying = savedInstanceState.getBoolean(STATE_PLAYER_IS_PLAYING);
+            mPlayerCurrentWindow = savedInstanceState.getInt(STATE_PLAYER_WINDOW);
             mPlayerCurrentPosition = savedInstanceState.getLong(STATE_PLAYER_POSITION);
         }
     }
@@ -122,20 +138,40 @@ public class StepDetailFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        if (Util.SDK_INT > 23) {
+            initializeExoPlayer();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        initializeExoPlayer();
+
+        if (Util.SDK_INT <= 23) {
+            initializeExoPlayer();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        releasePlayer();
+
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
+
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+
         // If activity is not visible, we can dismiss the fullscreen dialog.
         if (mFullScreenDialog != null) {
             mFullScreenDialog.dismiss();
@@ -143,10 +179,24 @@ public class StepDetailFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        outState.putBoolean(STATE_PLAYER_IS_PLAYING, mPlayerIsPlaying);
+        outState.putInt(STATE_PLAYER_WINDOW, mPlayerCurrentWindow);
         outState.putLong(STATE_PLAYER_POSITION, mPlayerCurrentPosition);
+    }
+
+    // PlaybackControlView.PlaybackPreparer implementation
+    @Override
+    public void preparePlayback() {
+        initializeExoPlayer();
     }
 
     private void initFullscreenDialog() {
@@ -188,43 +238,48 @@ public class StepDetailFragment extends Fragment {
         // This step has no video...
         if (TextUtils.isEmpty(mStep.getVideoURL())) return;
 
+        // Get the step video URI
+        Uri mediaUri = Uri.parse(mStep.getVideoURL());
+
         if (mExoPlayer == null) {
 
             // Init the fullscreen dialog
             initFullscreenDialog();
 
-            // Get the step video URI
-            Uri mediaUri = Uri.parse(mStep.getVideoURL());
-
             // 1. Create a default TrackSelector
-            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
             TrackSelection.Factory videoTrackSelectionFactory =
-                    new AdaptiveTrackSelection.Factory(bandwidthMeter);
+                    new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
             TrackSelector trackSelector =
                     new DefaultTrackSelector(videoTrackSelectionFactory);
 
             // 2. Create the player
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
+            mExoPlayer.addListener(new PlayerEventListener());
 
             // 3. Attach the player to the view
             mExoPlayerView.setPlayer(mExoPlayer);
-
-            // 4. Prepare the media source
-            // Produces DataSource instances through which media data is loaded.
-            DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(),
-                    Util.getUserAgent(getActivity(), getActivity().getPackageName()), bandwidthMeter);
-            // This is the MediaSource representing the media to be played.
-            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(mediaUri);
-            // Prepare the player with the source.
-            mExoPlayer.prepare(videoSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayerView.setPlaybackPreparer(this);
+            mExoPlayer.setPlayWhenReady(mPlayerIsPlaying);
         }
+
+        // 4. Prepare the media source
+        // Produces DataSource instances through which media data is loaded.
+        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(),
+                Util.getUserAgent(getActivity(), getActivity().getPackageName()), BANDWIDTH_METER);
+        // This is the MediaSource representing the media to be played.
+        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(mediaUri);
 
         // Restore the position, if available.
-        if (mPlayerCurrentPosition > 0) {
-            mExoPlayer.seekTo(mPlayerCurrentPosition);
+        boolean haveResumePosition = mPlayerCurrentWindow != C.INDEX_UNSET;
+        if (haveResumePosition) {
+            mExoPlayer.seekTo(mPlayerCurrentWindow, mPlayerCurrentPosition);
         }
+
+        // Prepare the player with the source.
+        mExoPlayer.prepare(videoSource, !haveResumePosition, false);
+
+        mInErrorState = false;
 
         // Check if need to enter in fullscreen video mode
         boolean isFullscreenMode = (!mIsTwoPane && getResources().getBoolean(R.bool.is_landscape));
@@ -233,16 +288,69 @@ public class StepDetailFragment extends Fragment {
         }
     }
 
+    private void clearResumePosition() {
+        // Save the current window
+        mPlayerCurrentWindow = C.INDEX_UNSET;
+        // Save the current position
+        mPlayerCurrentPosition = C.TIME_UNSET;
+    }
+
+    private void updateResumePosition() {
+        // Save the current window
+        mPlayerCurrentWindow = mExoPlayer.getCurrentWindowIndex();
+        // Save the current position
+        mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
+    }
+
     private void releasePlayer() {
 
         if (mExoPlayer != null) {
-
-            // Save the current position
-            mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
-
-            mExoPlayer.stop();
+            // Save if the player is currently playing
+            mPlayerIsPlaying = mExoPlayer.getPlayWhenReady();
+            updateResumePosition();
             mExoPlayer.release();
             mExoPlayer = null;
+        }
+    }
+
+    private static boolean isBehindLiveWindow(ExoPlaybackException e) {
+        if (e.type != ExoPlaybackException.TYPE_SOURCE) {
+            return false;
+        }
+        Throwable cause = e.getSourceException();
+        while (cause != null) {
+            if (cause instanceof BehindLiveWindowException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
+    }
+
+    private class PlayerEventListener extends Player.DefaultEventListener {
+
+        @Override
+        public void onPositionDiscontinuity(@Player.DiscontinuityReason int reason) {
+            if (mInErrorState) {
+                // This will only occur if the user has performed a seek whilst in the error state. Update
+                // the resume position so that if the user then retries, playback will resume from the
+                // position to which they seeked.
+                updateResumePosition();
+            }
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException e) {
+
+            mInErrorState = true;
+
+            if (isBehindLiveWindow(e)) {
+                clearResumePosition();
+                initializeExoPlayer();
+            }
+            else {
+                updateResumePosition();
+            }
         }
     }
 }
