@@ -2,6 +2,7 @@ package com.rtchagas.udacity.bakingtime.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -33,8 +34,8 @@ import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.AR
 public class StepsListActivity extends AppCompatActivity implements OnItemClickListener {
 
     public static final String EXTRA_RECIPE = "extra_recipe";
-
     private static final String STATE_SELECTED_STEP = "state_selected_step";
+    private static final String FRAGMENT_STEP_DETAIL = "fragment_step_detail";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -91,6 +92,15 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
             }
             showSelectedStep();
         }
+        else {
+            // If step list view only make sure there's no previous detail fragment
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_STEP_DETAIL);
+            if (fragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .remove(fragment)
+                        .commitNow();
+            }
+        }
 
         // Setup the RecyclerView
         setupRecyclerView();
@@ -145,7 +155,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
 
             // Show the fragment
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.step_detail_container_composite, fragment)
+                    .replace(R.id.step_detail_container_composite, fragment, FRAGMENT_STEP_DETAIL)
                     .commit();
         }
         else {

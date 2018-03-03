@@ -138,40 +138,20 @@ public class StepDetailFragment extends Fragment implements PlaybackPreparer {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        if (Util.SDK_INT > 23) {
-            initializeExoPlayer();
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-
-        if (Util.SDK_INT <= 23) {
-            initializeExoPlayer();
-        }
+        initializeExoPlayer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
+        releasePlayer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
-
         // If activity is not visible, we can dismiss the fullscreen dialog.
         if (mFullScreenDialog != null) {
             mFullScreenDialog.dismiss();
