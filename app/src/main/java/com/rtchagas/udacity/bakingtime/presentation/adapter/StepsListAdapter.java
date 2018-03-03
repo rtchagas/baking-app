@@ -1,9 +1,8 @@
 package com.rtchagas.udacity.bakingtime.presentation.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,32 +16,25 @@ import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Ingredient;
 import com.rtchagas.udacity.bakingtime.core.Recipe;
 import com.rtchagas.udacity.bakingtime.core.Step;
-import com.rtchagas.udacity.bakingtime.presentation.StepDetailActivity;
-import com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment;
-import com.rtchagas.udacity.bakingtime.presentation.StepsListActivity;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
 
 public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int VIEWTYPE_INGREDIENTS = 1;
     private static final int VIEWTYPE_STEP = 2;
 
-    private final StepsListActivity mParentActivity;
+    private final OnItemClickListener mOnItemClickListener;
     private final Recipe mRecipe;
-    private final boolean mTwoPane;
 
     // To control the recycler view selected item
-    private int mSelectedPos = RecyclerView.NO_POSITION;
+    private int mSelectedPosition = RecyclerView.NO_POSITION;
 
-    public StepsListAdapter(StepsListActivity parent, Recipe recipe, boolean twoPane) {
+    public StepsListAdapter(Recipe recipe, @Nullable OnItemClickListener listener) {
         mRecipe = recipe;
-        mParentActivity = parent;
-        mTwoPane = twoPane;
+        mOnItemClickListener = listener;
     }
 
     @Override
@@ -88,6 +80,10 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return (mRecipe.getSteps() != null ? mRecipe.getSteps().size() : 0);
     }
 
+    public void setSelectedPosition(int position) {
+        mSelectedPosition = position;
+    }
+
     private void bindIngredientsViewHolder(@NonNull Context context,
                                            @NonNull IngredientsViewHolder holder, int position) {
 
@@ -131,10 +127,10 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             }
         }
 
-        holder.itemView.setTag(step);
+        holder.itemView.setTag(position);
 
         // Update selected position
-        holder.itemView.setSelected(mSelectedPos == position);
+        holder.itemView.setSelected(mSelectedPosition == position);
     }
 
     class StepViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -167,30 +163,17 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             // in that case, getAdapterPosition() will return RecyclerView.NO_POSITION
             if (getAdapterPosition() == RecyclerView.NO_POSITION) return;
 
+            int newPosition = getAdapterPosition();
+            // Do not fire the click twice on same item.
+            if (mSelectedPosition == newPosition) return;
+
             // Updating old as well as new selected positions
-            notifyItemChanged(mSelectedPos);
-            mSelectedPos = getAdapterPosition();
-            notifyItemChanged(mSelectedPos);
+            notifyItemChanged(mSelectedPosition);
+            mSelectedPosition = newPosition;
+            notifyItemChanged(mSelectedPosition);
 
-            Step item = (Step) view.getTag();
-
-            if (mTwoPane) {
-                // Create the fragment
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(ARG_STEP, item);
-                StepDetailFragment fragment = new StepDetailFragment();
-                fragment.setArguments(arguments);
-
-                // Show the fragment
-                mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.step_detail_container_composite, fragment)
-                        .commit();
-            }
-            else {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(ARG_STEP, item);
-                context.startActivity(intent);
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick((int)view.getTag());
             }
         }
     }

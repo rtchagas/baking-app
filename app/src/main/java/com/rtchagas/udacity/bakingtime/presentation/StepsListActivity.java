@@ -1,6 +1,8 @@
 package com.rtchagas.udacity.bakingtime.presentation;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,10 +14,14 @@ import android.view.MenuItem;
 
 import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Recipe;
+import com.rtchagas.udacity.bakingtime.core.Step;
+import com.rtchagas.udacity.bakingtime.presentation.adapter.OnItemClickListener;
 import com.rtchagas.udacity.bakingtime.presentation.adapter.StepsListAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -25,11 +31,11 @@ import butterknife.ButterKnife;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class StepsListActivity extends AppCompatActivity {
-
-    private static final String TAG = "BakingApp/" + StepsListActivity.class.getSimpleName();
+public class StepsListActivity extends AppCompatActivity implements OnItemClickListener {
 
     public static final String EXTRA_RECIPE = "extra_recipe";
+
+    private static final String STATE_SELECTED_STEP = "state_selected_step";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -38,6 +44,8 @@ public class StepsListActivity extends AppCompatActivity {
     private boolean mTwoPane;
 
     private Recipe mRecipe = null;
+
+    private int mSelectedStepPosition = -1;
 
     // All views should be declared here
     @BindView(R.id.recyclerview_steps)
@@ -71,9 +79,15 @@ public class StepsListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
+        // Restore the selected step, if any.
+        if (savedInstanceState != null) {
+            mSelectedStepPosition = savedInstanceState.getInt(STATE_SELECTED_STEP, -1);
+        }
+        onItemClick(mSelectedStepPosition);
+
         // Setup the RecyclerView
         setupRecyclerView();
-
+        // Bind the adapter
         bindStepsAdapter();
     }
 
@@ -89,6 +103,42 @@ public class StepsListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(STATE_SELECTED_STEP, mSelectedStepPosition);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
+        if (position < 0) {
+            return;
+        }
+
+        mSelectedStepPosition = position;
+        Step step = mRecipe.getSteps().get(position);
+
+        if (mTwoPane) {
+            // Create the fragment
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(ARG_STEP, step);
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setArguments(arguments);
+
+            // Show the fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_detail_container_composite, fragment)
+                    .commit();
+        }
+        else {
+            Intent intent = new Intent(this, StepDetailActivity.class);
+            intent.putExtra(ARG_STEP, step);
+            startActivity(intent);
+        }
+    }
+
     private void setupRecyclerView() {
 
         mRecyclerViewSteps.setLayoutManager(new LinearLayoutManager(this));
@@ -97,13 +147,18 @@ public class StepsListActivity extends AppCompatActivity {
         // Set some nice item divider
         DividerItemDecoration dividerVertical = new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL);
-        dividerVertical.setDrawable(ContextCompat.getDrawable(this, R.drawable.sp_divider_line_horizontal));
+        dividerVertical.setDrawable(ContextCompat.getDrawable(this,
+                R.drawable.sp_divider_line_horizontal));
 
         mRecyclerViewSteps.addItemDecoration(dividerVertical);
     }
 
     private void bindStepsAdapter() {
-        StepsListAdapter stepsListAdapter = new StepsListAdapter(this, mRecipe, mTwoPane);
+        StepsListAdapter stepsListAdapter = new StepsListAdapter(mRecipe, this);
         mRecyclerViewSteps.setAdapter(stepsListAdapter);
+
+        if (mSelectedStepPosition >= 0) {
+            stepsListAdapter.setSelectedPosition(mSelectedStepPosition);
+        }
     }
 }

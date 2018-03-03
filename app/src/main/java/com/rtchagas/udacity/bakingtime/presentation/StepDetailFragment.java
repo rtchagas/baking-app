@@ -48,19 +48,8 @@ public class StepDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_STEP = "arg_step";
-
     private static final String STATE_PLAYER_WINDOW = "state_player_window";
     private static final String STATE_PLAYER_POSITION = "state_player_position";
-
-    // Views
-    @BindView(R.id.layout_root_fragment_step)
-    ConstraintLayout mRootView;
-
-    @BindView(R.id.player_view)
-    PlayerView mExoPlayerView;
-
-    @BindView(R.id.text_step_description)
-    TextView mTextStepDescription;
 
     private Step mStep = null;
 
@@ -71,6 +60,16 @@ public class StepDetailFragment extends Fragment {
     private boolean mIsTwoPane = false;
 
     private Dialog mFullScreenDialog = null;
+
+    // Views
+    @BindView(R.id.layout_root_fragment_step)
+    ConstraintLayout mRootView;
+
+    @BindView(R.id.player_view)
+    PlayerView mExoPlayerView;
+
+    @BindView(R.id.text_step_description)
+    TextView mTextStepDescription;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
