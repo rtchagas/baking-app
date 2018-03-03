@@ -48,7 +48,6 @@ public class StepDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_STEP = "arg_step";
-    private static final String ARG_IS_TWO_PANE = "arg_two_pane";
 
     private static final String STATE_PLAYER_WINDOW = "state_player_window";
     private static final String STATE_PLAYER_POSITION = "state_player_position";
@@ -80,15 +79,6 @@ public class StepDetailFragment extends Fragment {
     public StepDetailFragment() {
     }
 
-    public static StepDetailFragment newInstance(Step step, boolean isTwoPane) {
-        Bundle arguments = new Bundle();
-        arguments.putSerializable(ARG_STEP, step);
-        arguments.putBoolean(ARG_IS_TWO_PANE, isTwoPane);
-        StepDetailFragment fragment = new StepDetailFragment();
-        fragment.setArguments(arguments);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,8 +88,6 @@ public class StepDetailFragment extends Fragment {
         if (mStep == null) {
             throw new InvalidParameterException("Arguments[Step] must not be null!");
         }
-
-        mIsTwoPane = getArguments().getBoolean(ARG_IS_TWO_PANE, false);
 
         // Restore player's position, if available.
         if (savedInstanceState != null) {
@@ -120,6 +108,9 @@ public class StepDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // Check two-pane mode
+        mIsTwoPane = (getActivity().findViewById(R.id.step_detail_container_composite) != null);
 
         // Initialize the Player view
         if (TextUtils.isEmpty(mStep.getVideoURL())) {
@@ -199,6 +190,11 @@ public class StepDetailFragment extends Fragment {
 
     private void initializeExoPlayer() {
 
+        if (TextUtils.isEmpty(mStep.getVideoURL())) {
+            // This step has no video...
+            return;
+        }
+
         if (mExoPlayer == null) {
 
             // Init the fullscreen dialog
@@ -238,7 +234,7 @@ public class StepDetailFragment extends Fragment {
             mExoPlayer.seekTo(mPlayerCurrentWindow, mPlayerCurrentPosition);
         }
 
-        // Check if need to enter in fullscreen mode
+        // Check if need to enter in fullscreen video mode
         boolean isFullscreenMode = (!mIsTwoPane && getResources().getBoolean(R.bool.is_landscape));
         if (isFullscreenMode) {
             openFullscreenDialog();
@@ -247,12 +243,15 @@ public class StepDetailFragment extends Fragment {
 
     private void releasePlayer() {
 
-        // Save the current position
-        mPlayerCurrentWindow =  mExoPlayer.getCurrentWindowIndex();
-        mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
+        if (mExoPlayer != null) {
 
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+            // Save the current position
+            mPlayerCurrentWindow = mExoPlayer.getCurrentWindowIndex();
+            mPlayerCurrentPosition = mExoPlayer.getCurrentPosition();
+
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 }

@@ -15,6 +15,8 @@ import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Step;
 import com.squareup.picasso.Picasso;
 
+import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
+
 /**
  * An activity representing a single Step detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
@@ -33,7 +35,7 @@ public class StepDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Get the target step
-        Step step = (Step) getIntent().getSerializableExtra(StepDetailFragment.ARG_STEP);
+        Step step = (Step) getIntent().getSerializableExtra(ARG_STEP);
 
         // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
@@ -62,9 +64,12 @@ public class StepDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            StepDetailFragment fragment = StepDetailFragment.newInstance(step, false);
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(ARG_STEP, step);
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.step_detail_container, fragment)
+                    .add(R.id.step_detail_container_single, fragment)
                     .commit();
         }
     }

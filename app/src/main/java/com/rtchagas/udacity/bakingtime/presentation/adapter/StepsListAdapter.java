@@ -2,6 +2,7 @@ package com.rtchagas.udacity.bakingtime.presentation.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,8 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
 
 public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -173,16 +176,20 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
             if (mTwoPane) {
                 // Create the fragment
-                StepDetailFragment fragment = StepDetailFragment.newInstance(item, true);
+                Bundle arguments = new Bundle();
+                arguments.putSerializable(ARG_STEP, item);
+                StepDetailFragment fragment = new StepDetailFragment();
+                fragment.setArguments(arguments);
+
                 // Show the fragment
                 mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.step_detail_container, fragment)
+                        .replace(R.id.step_detail_container_composite, fragment)
                         .commit();
             }
             else {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(StepDetailFragment.ARG_STEP, item);
+                intent.putExtra(ARG_STEP, item);
                 context.startActivity(intent);
             }
         }
