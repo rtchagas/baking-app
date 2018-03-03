@@ -2,7 +2,6 @@ package com.rtchagas.udacity.bakingtime.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,7 +44,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
 
     private Recipe mRecipe = null;
 
-    private int mSelectedStepPosition = -1;
+    private int mSelectedStep = 0;
 
     // All views should be declared here
     @BindView(R.id.recyclerview_steps)
@@ -81,9 +80,11 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
 
         // Restore the selected step, if any.
         if (savedInstanceState != null) {
-            mSelectedStepPosition = savedInstanceState.getInt(STATE_SELECTED_STEP, -1);
+            mSelectedStep = savedInstanceState.getInt(STATE_SELECTED_STEP);
         }
-        onItemClick(mSelectedStepPosition);
+
+        // Show the first or any previously selected step
+        showSelectedStep();
 
         // Setup the RecyclerView
         setupRecyclerView();
@@ -107,7 +108,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(STATE_SELECTED_STEP, mSelectedStepPosition);
+        outState.putInt(STATE_SELECTED_STEP, mSelectedStep);
     }
 
     @Override
@@ -117,8 +118,13 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
             return;
         }
 
-        mSelectedStepPosition = position;
-        Step step = mRecipe.getSteps().get(position);
+        mSelectedStep = position;
+        showSelectedStep();
+    }
+
+    private void showSelectedStep() {
+
+        Step step = mRecipe.getSteps().get(mSelectedStep);
 
         if (mTwoPane) {
             // Create the fragment
@@ -157,8 +163,8 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
         StepsListAdapter stepsListAdapter = new StepsListAdapter(mRecipe, this);
         mRecyclerViewSteps.setAdapter(stepsListAdapter);
 
-        if (mSelectedStepPosition >= 0) {
-            stepsListAdapter.setSelectedPosition(mSelectedStepPosition);
+        if (mSelectedStep >= 0) {
+            stepsListAdapter.setSelectedStep(mSelectedStep);
         }
     }
 }

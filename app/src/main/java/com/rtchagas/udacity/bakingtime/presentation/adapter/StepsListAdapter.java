@@ -92,8 +92,9 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return (stepsCount + 1);
     }
 
-    public void setSelectedPosition(int position) {
-        mSelectedPosition = position;
+    public void setSelectedStep(int stepIndex) {
+        // Added +1 due to ingredients item in the first position
+        mSelectedPosition = (stepIndex + 1);
     }
 
     private void bindIngredientsViewHolder(@NonNull Context context,
