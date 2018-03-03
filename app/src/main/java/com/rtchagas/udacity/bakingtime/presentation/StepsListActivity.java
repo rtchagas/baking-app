@@ -44,7 +44,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
 
     private Recipe mRecipe = null;
 
-    private int mSelectedStep = 0;
+    private int mSelectedStep = -1;
 
     // All views should be declared here
     @BindView(R.id.recyclerview_steps)
@@ -83,8 +83,14 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
             mSelectedStep = savedInstanceState.getInt(STATE_SELECTED_STEP);
         }
 
-        // Show the first or any previously selected step
-        showSelectedStep();
+        // If master/detail, show the first or any previously selected step
+        if (mTwoPane) {
+            // If no previous step, set the first
+            if (mSelectedStep < 0) {
+                mSelectedStep = 0;
+            }
+            showSelectedStep();
+        }
 
         // Setup the RecyclerView
         setupRecyclerView();
@@ -114,9 +120,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
     @Override
     public void onItemClick(int position) {
 
-        if (position < 0) {
-            return;
-        }
+        if (position < 0) return;
 
         mSelectedStep = position;
         showSelectedStep();
