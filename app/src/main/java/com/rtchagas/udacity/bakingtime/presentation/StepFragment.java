@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -43,10 +44,10 @@ import butterknife.ButterKnife;
 /**
  * A fragment representing a single Step detail screen.
  * This fragment is either contained in a {@link StepsListActivity}
- * in two-pane mode (on tablets) or a {@link StepDetailActivity}
+ * in two-pane mode (on tablets) or a {@link StepActivity}
  * on handsets.
  */
-public class StepDetailFragment extends Fragment implements PlaybackPreparer {
+public class StepFragment extends Fragment implements PlaybackPreparer {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -84,7 +85,16 @@ public class StepDetailFragment extends Fragment implements PlaybackPreparer {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StepDetailFragment() {
+    public StepFragment() {
+    }
+
+    public static StepFragment newInstance(@NonNull Step step) {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable(ARG_STEP, step);
+
+        StepFragment fragment = new StepFragment();
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override

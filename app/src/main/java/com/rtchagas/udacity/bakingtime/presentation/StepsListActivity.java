@@ -21,13 +21,13 @@ import com.rtchagas.udacity.bakingtime.presentation.adapter.StepsListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
+import static com.rtchagas.udacity.bakingtime.presentation.StepFragment.ARG_STEP;
 
 /**
  * An activity representing a list of Steps. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link StepDetailActivity} representing
+ * lead to a {@link StepActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
@@ -148,10 +148,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
         if (mTwoPane) {
 
             // Create the fragment
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(ARG_STEP, step);
-            StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(arguments);
+            StepFragment fragment = StepFragment.newInstance(step);
 
             // Show the fragment
             getSupportFragmentManager().beginTransaction()
@@ -159,7 +156,7 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
                     .commit();
         }
         else {
-            Intent intent = new Intent(this, StepDetailActivity.class);
+            Intent intent = new Intent(this, StepActivity.class);
             intent.putExtra(ARG_STEP, step);
             startActivity(intent);
         }

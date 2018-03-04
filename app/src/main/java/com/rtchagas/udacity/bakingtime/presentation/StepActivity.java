@@ -13,7 +13,7 @@ import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Step;
 import com.squareup.picasso.Picasso;
 
-import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.ARG_STEP;
+import static com.rtchagas.udacity.bakingtime.presentation.StepFragment.ARG_STEP;
 
 /**
  * An activity representing a single Step detail screen. This
@@ -21,7 +21,7 @@ import static com.rtchagas.udacity.bakingtime.presentation.StepDetailFragment.AR
  * item details are presented side-by-side with a list of items
  * in a {@link StepsListActivity}.
  */
-public class StepDetailActivity extends AppCompatActivity {
+public class StepActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +62,7 @@ public class StepDetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(ARG_STEP, step);
-            StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(arguments);
+            StepFragment fragment = StepFragment.newInstance(step);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.step_detail_container_single, fragment)
                     .commit();

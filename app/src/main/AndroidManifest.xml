@@ -27,7 +27,7 @@
             android:parentActivityName=".presentation.RecipesListActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".presentation.StepDetailActivity"
+            android:name=".presentation.StepActivity"
             android:label="@string/title_steps_detail"
             android:parentActivityName=".presentation.StepsListActivity"
             android:theme="@style/AppTheme.NoActionBar">
