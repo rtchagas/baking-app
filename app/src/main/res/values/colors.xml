@@ -11,5 +11,5 @@
     <color name="secondaryTextColor">@color/material_grey600</color>
     <color name="icons">@color/material_white</color>
     <color name="divider">@color/material_grey400</color>
-    <color name="windowBackground">@color/material_grey200</color>
+    <color name="windowBackground">@color/material_grey100</color>
 </resources>

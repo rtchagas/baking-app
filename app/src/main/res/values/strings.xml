@@ -13,11 +13,13 @@
     <!-- "1.2 kg of rice" -->
     <string name="ingredient_format">%s %s of %s</string>
     <string name="alt_step_backdrop">Step backdrop</string>
-
+    <string name="step_go_to_next">Next step</string>
+    <string name="step_go_to_previous">Previous step</string>
+    <string name="step_jump_last">Yeah! You\'ve done the last step!</string>
+    <string name="step_jump_first">You should begin from here :)</string>
 
     <plurals name="recipe_servings_description">
         <item quantity="one">Makes %d serving</item>
         <item quantity="other">Makes %d servings</item>
     </plurals>
-
 </resources>

@@ -18,10 +18,10 @@ import com.rtchagas.udacity.bakingtime.core.Step;
 import com.rtchagas.udacity.bakingtime.presentation.adapter.OnItemClickListener;
 import com.rtchagas.udacity.bakingtime.presentation.adapter.StepsListAdapter;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.rtchagas.udacity.bakingtime.presentation.StepFragment.ARG_STEP;
 
 /**
  * An activity representing a list of Steps. This activity
@@ -130,7 +130,9 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
     @Override
     public void onItemClick(int position) {
 
-        if (position < 0) return;
+        if (position < 0) {
+            return;
+        }
 
         // Do not replace the same step fragment
         if (mTwoPane && (mSelectedStep == position)) {
@@ -157,7 +159,8 @@ public class StepsListActivity extends AppCompatActivity implements OnItemClickL
         }
         else {
             Intent intent = new Intent(this, StepActivity.class);
-            intent.putExtra(ARG_STEP, step);
+            intent.putExtra(StepActivity.EXTRA_STEP_LIST, new ArrayList<>(mRecipe.getSteps()));
+            intent.putExtra(StepActivity.EXTRA_STEP_INDEX, mSelectedStep);
             startActivity(intent);
         }
     }
