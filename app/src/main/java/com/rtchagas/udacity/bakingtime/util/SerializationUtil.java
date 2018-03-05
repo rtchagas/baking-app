@@ -17,7 +17,7 @@ import java.io.Serializable;
 public final class SerializationUtil {
 
     /**
-     * Read the Recipe from Base64 string.
+     * Read the object from Base64 string.
      */
     @Nullable
     @SuppressWarnings("unchecked")
@@ -37,7 +37,7 @@ public final class SerializationUtil {
     }
 
     /**
-     * Write the Recipe to a Base64 string.
+     * Write the object to a Base64 string.
      */
     @Nullable
     public static String toString(@NonNull Serializable object) {
