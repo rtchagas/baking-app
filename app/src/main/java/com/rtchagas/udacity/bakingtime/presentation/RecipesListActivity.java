@@ -1,5 +1,7 @@
 package com.rtchagas.udacity.bakingtime.presentation;
 
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -17,7 +19,10 @@ import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.controller.OnRecipesResultListener;
 import com.rtchagas.udacity.bakingtime.controller.RecipesController;
 import com.rtchagas.udacity.bakingtime.core.Recipe;
+import com.rtchagas.udacity.bakingtime.presentation.adapter.OnItemClickListener;
 import com.rtchagas.udacity.bakingtime.presentation.adapter.RecipesListAdapter;
+import com.rtchagas.udacity.bakingtime.widget.recipe.RecipeWidget;
+import com.rtchagas.udacity.bakingtime.widget.recipe.WidgetDataPreferencesStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +30,21 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesListActivity extends AppCompatActivity implements OnRecipesResultListener {
+public class RecipesListActivity extends AppCompatActivity
+        implements OnRecipesResultListener, OnItemClickListener {
 
     private static final String TAG = "BakingApp/" + StepsListActivity.class.getSimpleName();
 
     private static final String STATE_RECIPE_LIST = "state_recipe_list";
 
     private List<Recipe> mRecipeList = null;
+
+    /**
+     * Tells if this activity is being used to configure
+     * the {@link RecipeWidget RecipeWidget} AppWidget.
+     */
+    private boolean mIsWidgetConfig = false;
+    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     // All views should be declared here
     @BindView(R.id.recyclerview_recipes)
@@ -48,8 +61,37 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
         ButterKnife.bind(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+
+        // Initialize the widget configuration
+        if ("android.appwidget.action.APPWIDGET_CONFIGURE".equals(getIntent().getAction())) {
+
+            mIsWidgetConfig = true;
+
+            // Set the result to CANCELED.  This will cause the widget host to cancel
+            // out of the widget placement if the user presses the back button.
+            setResult(RESULT_CANCELED);
+
+            // Find the widget id from the intent.
+            Intent intent = getIntent();
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                mAppWidgetId = extras.getInt(
+                        AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+            }
+
+            // If this activity was started with an intent without an app widget ID, finish with an error.
+            if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+                finish();
+                return;
+            }
+
+            // Set the custom title
+            toolbar.setTitle(R.string.recipe_widget_configure_choose);
+        }
+
+        // Set the toolbar
+        setSupportActionBar(toolbar);
 
         // Setup the RecyclerView
         setupRecyclerView();
@@ -101,6 +143,21 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
         setLoadingProgress(false);
     }
 
+    @Override
+    public void onItemClick(int position) {
+
+        Recipe item = mRecipeList.get(position);
+
+        if (!mIsWidgetConfig) {
+            Intent intent = new Intent(this, StepsListActivity.class);
+            intent.putExtra(StepsListActivity.EXTRA_RECIPE, item);
+            startActivity(intent);
+        }
+        else {
+            configureWidgetAndFinish(item);
+        }
+    }
+
     private void setupRecyclerView() {
 
         mRecyclerViewRecipes.setLayoutManager(
@@ -122,7 +179,7 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
     }
 
     private void bindRecipesAdapter(List<Recipe> recipeList) {
-        RecipesListAdapter recipeListAdapter = new RecipesListAdapter(recipeList);
+        RecipesListAdapter recipeListAdapter = new RecipesListAdapter(recipeList, this);
         mRecyclerViewRecipes.setAdapter(recipeListAdapter);
     }
 
@@ -133,5 +190,23 @@ public class RecipesListActivity extends AppCompatActivity implements OnRecipesR
 
     private void setLoadingProgress(boolean isLoading) {
         mProgressLoading.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    // Widget related methods
+
+    private void configureWidgetAndFinish(Recipe recipe) {
+
+        // Store the recipe locally
+        WidgetDataPreferencesStore.saveRecipeInfo(this, mAppWidgetId, recipe);
+
+        // It is the responsibility of the configuration activity to update the app widget
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        RecipeWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId);
+
+        // Make sure we pass back the original appWidgetId
+        Intent resultValue = new Intent();
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+        setResult(RESULT_OK, resultValue);
+        finish();
     }
 }

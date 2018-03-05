@@ -2,7 +2,7 @@
     <string name="app_name">Baking Time</string>
     <string name="title_steps_detail">Step description</string>
     <string name="retry">Retry</string>
-    <string name="recipes_loading_error">Couldn\'t load the recipes.</string>
+    <string name="recipes_loading_error">There was a problem loading the recipes</string>
     <string name="alt_recipe_image">Recipe\'s illustrative image</string>
     <string name="alt_step_movie">A movie guide is available</string>
     <string name="step_number">step %d</string>
@@ -22,4 +22,8 @@
         <item quantity="one">Makes %d serving</item>
         <item quantity="other">Makes %d servings</item>
     </plurals>
+
+    <!-- Recipe widget -->
+    <string name="appwidget_text">Recipe ingredients</string>
+    <string name="recipe_widget_configure_choose">Please choose a recipe</string>
 </resources>

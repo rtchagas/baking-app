@@ -1,7 +1,8 @@
 package com.rtchagas.udacity.bakingtime.presentation.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,7 +13,6 @@ import android.widget.TextView;
 
 import com.rtchagas.udacity.bakingtime.R;
 import com.rtchagas.udacity.bakingtime.core.Recipe;
-import com.rtchagas.udacity.bakingtime.presentation.StepsListActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -23,22 +23,12 @@ import butterknife.ButterKnife;
 public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.RecipeViewHolder> {
 
     private final List<Recipe> mRecipeList;
+    private final OnItemClickListener mOnItemClickListener;
 
-    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            Recipe item = (Recipe) view.getTag();
-
-            Context context = view.getContext();
-            Intent intent = new Intent(context, StepsListActivity.class);
-            intent.putExtra(StepsListActivity.EXTRA_RECIPE, item);
-            context.startActivity(intent);
-        }
-    };
-
-    public RecipesListAdapter(List<Recipe> items) {
+    public RecipesListAdapter(@NonNull List<Recipe> items,
+                              @Nullable OnItemClickListener itemClickListener) {
         mRecipeList = items;
+        mOnItemClickListener = itemClickListener;
     }
 
     @Override
@@ -69,14 +59,22 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
                     .load(recipe.getImage())
                     .error(R.drawable.img_recipe_ingredients)
                     .into(holder.imageRecipe);
-        } else {
+        }
+        else {
             Picasso.with(context)
                     .load(R.drawable.img_recipe_ingredients)
                     .into(holder.imageRecipe);
         }
 
         holder.itemView.setTag(mRecipeList.get(position));
-        holder.itemView.setOnClickListener(mOnClickListener);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(holder.getAdapterPosition());
+                }
+            }
+        });
     }
 
     @Override

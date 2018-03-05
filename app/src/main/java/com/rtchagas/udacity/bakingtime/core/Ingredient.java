@@ -1,6 +1,10 @@
 package com.rtchagas.udacity.bakingtime.core;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
+import com.rtchagas.udacity.bakingtime.R;
 
 import java.io.Serializable;
 
@@ -41,4 +45,22 @@ public class Ingredient implements Serializable {
         this.ingredient = ingredient;
     }
 
+    @SuppressWarnings("defaultlocale")
+
+    public static String getFormattedString(@NonNull Context context, @NonNull Ingredient ingredient) {
+
+        // Get the measure
+        String measure = ingredient.getMeasure().toLowerCase();
+
+        // Get the quantity
+        double rawQuantity = ingredient.getQuantity();
+        String quantity = (rawQuantity % 1d > 0)
+                ? String.format("%.1f", rawQuantity)
+                : String.format("%.0f", rawQuantity);
+
+        // Get the ingredient name
+        String name = ingredient.getIngredient();
+
+        return context.getString(R.string.ingredient_format, quantity, measure, name);
+    }
 }

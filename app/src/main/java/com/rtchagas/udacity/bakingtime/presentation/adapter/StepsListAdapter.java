@@ -226,30 +226,12 @@ public class StepsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             Ingredient ingredient = mRecipe.getIngredients().get(position);
             // Just format the ingredient as a single string and bind it.
             holder.textIngredient.setText(
-                    formatIngredient(holder.itemView.getContext(), ingredient));
+                    Ingredient.getFormattedString(holder.itemView.getContext(), ingredient));
         }
 
         @Override
         public int getItemCount() {
             return (mRecipe.getIngredients() != null ? mRecipe.getIngredients().size() : 0);
-        }
-
-        @SuppressWarnings("defaultlocale")
-        private String formatIngredient(@NonNull Context context, @NonNull Ingredient ingredient) {
-
-            // Get the measure
-            String measure = ingredient.getMeasure().toLowerCase();
-
-            // Get the quantity
-            double rawQuantity = ingredient.getQuantity();
-            String quantity = (rawQuantity % 1d > 0)
-                    ? String.format("%.1f", rawQuantity)
-                    : String.format("%.0f", rawQuantity);
-
-            // Get the ingredient name
-            String name = ingredient.getIngredient();
-
-            return context.getString(R.string.ingredient_format, quantity, measure, name);
         }
     }
 
